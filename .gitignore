@@ -1,0 +1,68 @@
+# Build directories
+build/
+out/
+debug/
+release/
+x64/
+Win32/
+*.exe
+*.dll
+
+# CMake generated files
+CMakeFiles/
+CMakeCache.txt
+cmake_install.cmake
+*.dir/
+
+# IDE specific files
+.vs/
+.vscode/
+*.sln
+*.vcxproj
+*.vcxproj.filters
+*.vcxproj.user
+
+# Compiled Object files
+*.slo
+*.lo
+*.o
+*.obj
+
+# Compiled Dynamic libraries
+*.so
+*.dylib
+*.dll
+
+# Compiled Static libraries
+*.lai
+*.la
+*.a
+*.lib
+
+# OpenCV specific
+opencv/build/
+*.jpg
+*.jpeg
+*.png
+*.bmp
+!data/*.jpg
+!data/*.jpeg
+!data/*.png
+!data/*.bmp
+
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+
+# Environment
+.env
+.venv
+env/
+venv/
+ENV/
+
+# OS specific
+.DS_Store
+Thumbs.db 
