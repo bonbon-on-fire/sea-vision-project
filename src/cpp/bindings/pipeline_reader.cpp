@@ -7,7 +7,7 @@
 using json = nlohmann::json;
 
 PipelineConfig PipelineReader::readPipeline(const std::string& filename) {
-    // Open and read the JSON file
+    // open and read the json file
     std::ifstream file(filename);
     if (!file.is_open()) {
         throw std::runtime_error("Could not open pipeline file: " + filename);
@@ -22,14 +22,14 @@ PipelineConfig PipelineReader::readPipeline(const std::string& filename) {
     
     PipelineConfig config;
     
-    // Parse global ROI (optional, defaults to full image)
+    // parse global roi (optional, defaults to full image)
     if (j.contains("roi")) {
         config.global_roi = parseROI(j["roi"]);
     } else {
         config.global_roi = ROI(0, 0, 0, 0); // Full image
     }
     
-    // Parse operations array
+    // parse operations array
     if (!j.contains("operations") || !j["operations"].is_array()) {
         throw std::runtime_error("Pipeline must contain 'operations' array");
     }
@@ -38,7 +38,7 @@ PipelineConfig PipelineReader::readPipeline(const std::string& filename) {
         config.operations.push_back(parseOperation(op_json));
     }
     
-    // Parse input/output image paths (optional)
+    // parse input/output image paths (optional)
     if (j.contains("input_image")) {
         config.input_image = j["input_image"];
     }
@@ -51,20 +51,20 @@ PipelineConfig PipelineReader::readPipeline(const std::string& filename) {
 }
 
 bool PipelineReader::validatePipeline(const PipelineConfig& config) {
-    // Check if we have at least one operation
+    // check if we have at least one operation
     if (config.operations.empty()) {
         std::cerr << "Error: Pipeline must contain at least one operation" << std::endl;
         return false;
     }
     
-    // Get list of supported operations
+    // get list of supported operations
     auto supported_ops = getSupportedOperations();
     
-    // Validate each operation
+    // validate each operation
     for (size_t i = 0; i < config.operations.size(); ++i) {
         const auto& op = config.operations[i];
         
-        // Check if operation type is supported
+        // check if operation type is supported
         bool supported = false;
         for (const auto& supported_op : supported_ops) {
             if (op.type == supported_op) {
@@ -78,7 +78,7 @@ bool PipelineReader::validatePipeline(const PipelineConfig& config) {
             return false;
         }
         
-        // Validate operation-specific parameters
+        // validate operation-specific parameters
         if (op.type == "brightness") {
             if (op.parameters.find("factor") == op.parameters.end()) {
                 std::cerr << "Error: Brightness operation requires 'factor' parameter" << std::endl;
@@ -100,7 +100,7 @@ bool PipelineReader::validatePipeline(const PipelineConfig& config) {
 }
 
 std::vector<std::string> PipelineReader::getSupportedOperations() {
-    return {"brightness", "blur"};
+    return {"brightness", "blur", "crop", "sharpen", "contrast"};
 }
 
 ROI PipelineReader::parseROI(const json& roi_json) {
@@ -125,13 +125,13 @@ ROI PipelineReader::parseROI(const json& roi_json) {
 OperationConfig PipelineReader::parseOperation(const json& op_json) {
     OperationConfig op;
     
-    // Parse operation type
+    // parse operation type
     if (!op_json.contains("type") || !op_json["type"].is_string()) {
         throw std::runtime_error("Operation must have 'type' field");
     }
     op.type = op_json["type"];
     
-    // Parse parameters
+    // parse parameters
     if (op_json.contains("parameters") && op_json["parameters"].is_object()) {
         for (const auto& [key, value] : op_json["parameters"].items()) {
             if (value.is_number()) {
@@ -140,11 +140,11 @@ OperationConfig PipelineReader::parseOperation(const json& op_json) {
         }
     }
     
-    // Parse ROI (optional, will use global ROI if not specified)
+    // parse roi (optional, will use global roi if not specified)
     if (op_json.contains("roi")) {
         op.roi = parseROI(op_json["roi"]);
     } else {
-        op.roi = ROI(0, 0, 0, 0); // Will be overridden by global ROI
+        op.roi = ROI(0, 0, 0, 0); // will be overridden by global roi
     }
     
     return op;

@@ -25,9 +25,17 @@ public:
     cv::Mat execute(const cv::Mat& input, const ROI& roi, const std::map<std::string, double>& params) override;
 
     /**
-     * get the operation type
+     * get the operation name
      * 
      * @return "blur"
      */
-    std::string getType() const override { return "blur"; }
+    std::string getName() const override { return "blur"; }
+
+    /**
+     * validate parameters for blur operation
+     * 
+     * @param parameters parameters to validate
+     * @return true if parameters are valid, false otherwise
+     */
+    bool validateParameters(const std::map<std::string, double>& parameters) const override;
 }; 

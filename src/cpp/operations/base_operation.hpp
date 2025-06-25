@@ -42,7 +42,15 @@ public:
      * 
      * @return string identifier for the operation
      */
-    virtual std::string getType() const = 0;
+    virtual std::string getName() const = 0;
+
+    /**
+     * validate parameters for this operation
+     * 
+     * @param parameters parameters to validate
+     * @return true if parameters are valid, false otherwise
+     */
+    virtual bool validateParameters(const std::map<std::string, double>& parameters) const = 0;
 
 protected:
     /**

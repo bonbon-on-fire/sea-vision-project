@@ -1,4 +1,5 @@
 #include "brightness_operation.hpp"
+#include <iostream>
 
 cv::Mat BrightnessOperation::execute(const cv::Mat& input, const ROI& roi, const std::map<std::string, double>& params) {
     // get brightness factor from parameters (default to 1.0 if not specified)
@@ -28,4 +29,17 @@ cv::Mat BrightnessOperation::execute(const cv::Mat& input, const ROI& roi, const
     
     // apply the processed ROI back to the original image
     return applyROI(input, output, roi);
+}
+
+bool BrightnessOperation::validateParameters(const std::map<std::string, double>& parameters) const {
+    // check brightness factor
+    if (parameters.count("factor")) {
+        double factor = parameters.at("factor");
+        if (factor < 0.0 || factor > 5.0) {
+            std::cerr << "Error: Brightness factor must be between 0.0 and 5.0" << std::endl;
+            return false;
+        }
+    }
+    
+    return true;
 } 

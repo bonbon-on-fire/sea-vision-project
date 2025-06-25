@@ -1,4 +1,5 @@
 #include "blur_operation.hpp"
+#include <iostream>
 
 cv::Mat BlurOperation::execute(const cv::Mat& input, const ROI& roi, const std::map<std::string, double>& params) {
     // get parameters with defaults
@@ -28,4 +29,26 @@ cv::Mat BlurOperation::execute(const cv::Mat& input, const ROI& roi, const std::
     
     // apply the processed ROI back to the original image
     return applyROI(input, output, roi);
+}
+
+bool BlurOperation::validateParameters(const std::map<std::string, double>& parameters) const {
+    // check kernel size
+    if (parameters.count("kernel_size")) {
+        double kernel_size = parameters.at("kernel_size");
+        if (kernel_size < 3 || kernel_size > 31) {
+            std::cerr << "Error: Blur kernel size must be between 3 and 31" << std::endl;
+            return false;
+        }
+    }
+    
+    // check sigma
+    if (parameters.count("sigma")) {
+        double sigma = parameters.at("sigma");
+        if (sigma < 0.1 || sigma > 10.0) {
+            std::cerr << "Error: Blur sigma must be between 0.1 and 10.0" << std::endl;
+            return false;
+        }
+    }
+    
+    return true;
 } 

@@ -1,0 +1,32 @@
+{
+  "roi": {
+    "x": 0,
+    "y": 0,
+    "width": 0,
+    "height": 0
+  },
+  "operations": [
+    {
+      "type": "crop",
+      "parameters": {
+        "x": 100,
+        "y": 100,
+        "width": 400,
+        "height": 300
+      }
+    },
+    {
+      "type": "blur",
+      "parameters": {
+        "kernel_size": 7,
+        "sigma": 1.5
+      }
+    },
+    {
+      "type": "brightness",
+      "parameters": {
+        "factor": 1.3
+      }
+    }
+  ]
+} 

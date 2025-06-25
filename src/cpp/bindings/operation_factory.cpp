@@ -1,11 +1,17 @@
 #include "operation_factory.hpp"
 #include "../operations/brightness_operation.hpp"
 #include "../operations/blur_operation.hpp"
+#include "../operations/crop_operation.hpp"
+#include "../operations/sharpen_operation.hpp"
+#include "../operations/contrast_operation.hpp"
 
 // Define the static creators map
 const std::map<std::string, OperationFactory::OperationCreator> OperationFactory::creators = {
     {"brightness", &OperationFactory::createBrightness},
-    {"blur", &OperationFactory::createBlur}
+    {"blur", &OperationFactory::createBlur},
+    {"crop", &OperationFactory::createCrop},
+    {"sharpen", &OperationFactory::createSharpen},
+    {"contrast", &OperationFactory::createContrast}
 };
 
 std::unique_ptr<Operation> OperationFactory::createOperation(const std::string& type) {
@@ -34,4 +40,16 @@ std::unique_ptr<Operation> OperationFactory::createBrightness() {
 
 std::unique_ptr<Operation> OperationFactory::createBlur() {
     return std::make_unique<BlurOperation>();
+}
+
+std::unique_ptr<Operation> OperationFactory::createCrop() {
+    return std::make_unique<CropOperation>();
+}
+
+std::unique_ptr<Operation> OperationFactory::createSharpen() {
+    return std::make_unique<SharpenOperation>();
+}
+
+std::unique_ptr<Operation> OperationFactory::createContrast() {
+    return std::make_unique<ContrastOperation>();
 }
