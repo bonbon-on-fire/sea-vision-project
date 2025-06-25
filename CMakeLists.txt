@@ -20,6 +20,8 @@ message(STATUS "OpenCV include path: ${OpenCV_INCLUDE_DIRS}")
 add_executable(step main.cpp 
     src/cpp/operations/brightness_operation.cpp
     src/cpp/operations/blur_operation.cpp
+    src/cpp/bindings/pipeline_reader.cpp
+    src/cpp/bindings/operation_factory.cpp
 )
 
 # link OpenCV

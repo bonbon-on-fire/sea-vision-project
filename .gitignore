@@ -1,4 +1,4 @@
-# Build directories
+# build directories
 build/
 out/
 debug/
@@ -8,13 +8,13 @@ Win32/
 *.exe
 *.dll
 
-# CMake generated files
+# cmake generated files
 CMakeFiles/
 CMakeCache.txt
 cmake_install.cmake
 *.dir/
 
-# IDE specific files
+# ide specific files
 .vs/
 .vscode/
 *.sln
@@ -22,24 +22,24 @@ cmake_install.cmake
 *.vcxproj.filters
 *.vcxproj.user
 
-# Compiled Object files
+# compiled object files
 *.slo
 *.lo
 *.o
 *.obj
 
-# Compiled Dynamic libraries
+# compiled dynamic libraries
 *.so
 *.dylib
 *.dll
 
-# Compiled Static libraries
+# compiled static libraries
 *.lai
 *.la
 *.a
 *.lib
 
-# OpenCV specific
+# opencv specific
 opencv/build/
 *.jpg
 *.jpeg
@@ -50,19 +50,19 @@ opencv/build/
 !data/*.png
 !data/*.bmp
 
-# Python
+# python
 __pycache__/
 *.py[cod]
 *$py.class
 *.so
 
-# Environment
+# environment
 .env
 .venv
 env/
 venv/
 ENV/
 
-# OS specific
+# os specific
 .DS_Store
 Thumbs.db 

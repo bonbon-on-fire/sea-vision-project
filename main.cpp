@@ -9,68 +9,104 @@
 #include "src/cpp/operations/brightness_operation.hpp"
 #include "src/cpp/operations/blur_operation.hpp"
 
+// include new pipeline system
+#include "src/cpp/bindings/pipeline_reader.hpp"
+#include "src/cpp/bindings/operation_factory.hpp"
+
 /**
- * main function that demonstrates the operation system with parameters
+ * main function that demonstrates JSON-driven pipeline execution
+ * 
+ * usage: ./step <pipeline.json> <input_image> <output_image>
  * 
  * this function:
- * 1. loads an image from the data directory
- * 2. verifies the image was loaded successfully
- * 3. creates a brightness operation and sets parameters
- * 4. applies the operation and saves the result
- * 5. provides detailed logging for debugging
+ * 1. reads pipeline configuration from JSON file
+ * 2. loads the input image
+ * 3. creates operations dynamically based on JSON
+ * 4. executes the pipeline in order
+ * 5. saves the result
  * 
  * @return 0 on success, -1 on failure
  */
-int main() {
-    std::cout << "Starting SEA Vision image processing..." << std::endl;
-    
-    // load image
-    std::cout << "Loading image..." << std::endl;
-    cv::Mat image = cv::imread("data/input.jpg");
-    
-    if (image.empty()) {
-        std::cout << "Error: Could not load image 'data/input.jpg'" << std::endl;
-        std::cout << "Current working directory: " << std::filesystem::current_path() << std::endl;
+int main(int argc, char* argv[]) {
+    // check command line arguments
+    if (argc != 4) {
+        std::cout << "Usage: " << argv[0] << " <pipeline.json> <input_image> <output_image>" << std::endl;
+        std::cout << "Example: " << argv[0] << " pipeline.json data/input.jpg data/output.jpg" << std::endl;
         return -1;
     }
     
-    std::cout << "Successfully loaded image with size: " << image.cols << "x" << image.rows << std::endl;
+    std::string pipeline_file = argv[1];
+    std::string input_image = argv[2];
+    std::string output_image = argv[3];
     
-    // create operations
-    BrightnessOperation brightness_op;
-    BlurOperation blur_op;
+    std::cout << "Starting SEA Vision JSON-driven pipeline..." << std::endl;
+    std::cout << "Pipeline config: " << pipeline_file << std::endl;
+    std::cout << "Input image: " << input_image << std::endl;
+    std::cout << "Output image: " << output_image << std::endl;
     
-    // test brightness operation on full image
-    std::cout << "Testing brightness operation (full image)..." << std::endl;
-    std::map<std::string, double> brightness_params;
-    brightness_params["factor"] = 1.5; // increase brightness by 50%
-    ROI full_roi(0, 0, 0, 0); // full image
-    cv::Mat brightness_result = brightness_op.execute(image, full_roi, brightness_params);
-    cv::imwrite("data/output_step5_brightness_full.jpg", brightness_result);
-    std::cout << "Brightness (full image) completed. Saved as 'data/output_step5_brightness_full.jpg'" << std::endl;
-
-    // test blur operation on full image
-    std::cout << "Testing blur operation (full image)..." << std::endl;
-    std::map<std::string, double> blur_params;
-    blur_params["kernel_size"] = 5;
-    blur_params["sigma"] = 1.0;
-    cv::Mat blur_result = blur_op.execute(image, full_roi, blur_params);
-    cv::imwrite("data/output_step5_blur_full.jpg", blur_result);
-    std::cout << "Blur (full image) completed. Saved as 'data/output_step5_blur_full.jpg'" << std::endl;
-
-    // test brightness operation on ROI
-    ROI roi(image.cols / 4, image.rows / 4, image.cols / 2, image.rows / 2); // center box
-    std::cout << "Testing brightness operation (ROI)..." << std::endl;
-    cv::Mat brightness_roi_result = brightness_op.execute(image, roi, brightness_params);
-    cv::imwrite("data/output_step5_brightness_roi.jpg", brightness_roi_result);
-    std::cout << "Brightness (ROI) completed. Saved as 'data/output_step5_brightness_roi.jpg'" << std::endl;
-
-    // test blur operation on ROI
-    std::cout << "Testing blur operation (ROI)..." << std::endl;
-    cv::Mat blur_roi_result = blur_op.execute(image, roi, blur_params);
-    cv::imwrite("data/output_step5_blur_roi.jpg", blur_roi_result);
-    std::cout << "Blur (ROI) completed. Saved as 'data/output_step5_blur_roi.jpg'" << std::endl;
-
-    std::cout << "All operations completed successfully!" << std::endl;
+    try {
+        // read pipeline configuration from JSON
+        std::cout << "Reading pipeline configuration..." << std::endl;
+        PipelineConfig config = PipelineReader::readPipeline(pipeline_file);
+        
+        // validate pipeline configuration
+        std::cout << "Validating pipeline configuration..." << std::endl;
+        if (!PipelineReader::validatePipeline(config)) {
+            std::cerr << "Error: Invalid pipeline configuration" << std::endl;
+            return -1;
+        }
+        
+        // load input image
+        std::cout << "Loading input image..." << std::endl;
+        cv::Mat image = cv::imread(input_image);
+        if (image.empty()) {
+            std::cerr << "Error: Could not load image '" << input_image << "'" << std::endl;
+            return -1;
+        }
+        
+        std::cout << "Successfully loaded image with size: " << image.cols << "x" << image.rows << std::endl;
+        
+        // execute pipeline
+        std::cout << "Executing pipeline with " << config.operations.size() << " operations..." << std::endl;
+        cv::Mat result = image.clone();
+        
+        for (size_t i = 0; i < config.operations.size(); ++i) {
+            const auto& op_config = config.operations[i];
+            
+            std::cout << "  Step " << (i + 1) << ": " << op_config.type << std::endl;
+            
+            // create operation using factory
+            auto operation = OperationFactory::createOperation(op_config.type);
+            if (!operation) {
+                std::cerr << "Error: Could not create operation of type '" << op_config.type << "'" << std::endl;
+                return -1;
+            }
+            
+            // determine ROI to use (operation-specific or global)
+            ROI roi_to_use = (op_config.roi.width == 0 && op_config.roi.height == 0) 
+                           ? config.global_roi 
+                           : op_config.roi;
+            
+            // execute operation
+            result = operation->execute(result, roi_to_use, op_config.parameters);
+            
+            std::cout << "    Completed successfully" << std::endl;
+        }
+        
+        // save result
+        std::cout << "Saving result..." << std::endl;
+        if (!cv::imwrite(output_image, result)) {
+            std::cerr << "Error: Could not save image to '" << output_image << "'" << std::endl;
+            return -1;
+        }
+        
+        std::cout << "Pipeline completed successfully!" << std::endl;
+        std::cout << "Output saved to: " << output_image << std::endl;
+        
+    } catch (const std::exception& e) {
+        std::cerr << "Error: " << e.what() << std::endl;
+        return -1;
+    }
+    
     return 0;
 }
