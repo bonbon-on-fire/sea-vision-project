@@ -78,8 +78,24 @@ def prompt_for_params(op):
                 print(f"invalid value for {param['name']}. please enter a {param['type'].__name__}.")
     return params
 
+def prompt_for_roi():
+    print("\nenter roi (region of interest) parameters:")
+    print("(enter 0 for width/height to process full image)")
+    
+    x = int(input("  x coordinate (default 0): ") or "0")
+    y = int(input("  y coordinate (default 0): ") or "0")
+    width = int(input("  width (0 for full image): ") or "0")
+    height = int(input("  height (0 for full image): ") or "0")
+    
+    return {
+        "x": x,
+        "y": y,
+        "width": width,
+        "height": height
+    }
+
 def main():
-    print("welcome to the sea vision pipeline builder!!")
+    print("welcome to the sea vision pipeline builder!")
     operations = []
     while True:
         op_num = prompt_for_operation()
@@ -94,9 +110,14 @@ def main():
     if not operations:
         print("no operations selected. exiting.")
         return
+    
+    # get roi input
+    roi = prompt_for_roi()
+    
     input_image = input("enter input image path: ")
     output_image = input("enter output image path: ")
     pipeline = {
+        "roi": roi,
         "operations": operations,
         "input_image": input_image,
         "output_image": output_image
