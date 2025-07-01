@@ -1,33 +1,40 @@
-# Workflow:
-```
-┌─────────────────┐    ┌─────────────────┐    ┌─────────────────┐
-│   User Input    │    │  Python Layer   │    │   C++ Backend   │
-│                 │    │                 │    │                 │
-│ 1. Python CLI   │───▶│ 2. Pipeline     │───▶│ 3. Image        │
-│    or Script    │    │    Builder      │    │    Processing   │
-│                 │    │                 │    │                 │
-│ OR              │    │                 │    │                 │
-│                 │    │                 │    │                 │
-│ 1. Manual JSON  │────┼─────────────────┼───▶│                 │
-│    File         │    │                 │    │                 │
-└─────────────────┘    └─────────────────┘    └─────────────────┘
-                                │                        │
-                                ▼                        ▼
-                       ┌─────────────────┐    ┌─────────────────┐
-                       │  Generated      │    │  Processed      │
-                       │  JSON Config    │    │  Image Output   │
-                       └─────────────────┘    └─────────────────┘
+# sea vision project
+
+## overview
+this project provides a flexible, scriptable image processing pipeline. you can build pipelines interactively using a python cli, or by writing a json config. the c++ backend executes the pipeline, applying each operation in order.
+
+---
+
+## workflow
+
+```mermaid
+flowchart LR
+    A[user input] --> B[python cli or manual json]
+    B --> C[pipeline json]
+    C --> D[c++ backend]
+    D --> E[processed image output]
 ```
 
-# The Big Picture:
-The system reads a JSON configuration file that defines a sequence of image processing operations. Each operation has parameters (like blur strength, brightness factor, etc.). The C++ pipeline loads your image, applies each operation in order, and saves the result.
+---
 
-# How to Use
+## how to use
 
-Create a JSON file that defines your pipeline:
+### 1. interactive python cli
+
+run:
+```sh
+python src/python/main_cli.py
+```
+- select operations (brightness, blur, contrast, crop, sharpen) by number
+- enter parameters as prompted
+- enter input and output image paths (e.g., `data/input.jpg`, `data/output_result.jpg`)
+- the cli creates a json pipeline and runs the c++ backend automatically
+
+### 2. manual json
+
+create a file like:
 ```json
 {
-  "global_roi": {"x": 0, "y": 0, "width": 0, "height": 0},
   "operations": [
     {
       "type": "brightness",
@@ -37,71 +44,70 @@ Create a JSON file that defines your pipeline:
       "type": "blur",
       "parameters": {"kernel_size": 5, "sigma": 1.0}
     }
-  ]
+  ],
+  "input_image": "data/input.jpg",
+  "output_image": "data/output_result.jpg"
 }
 ```
-
-Then run:
-```bash
-./sea_vision pipeline.json input.jpg output.jpg
+then run:
+```sh
+build/Release/sea_vision.exe pipeline.json data/input.jpg data/output_result.jpg
 ```
 
-# Project Structure
+---
+
+## project structure
 
 ```
 sea_vision_project/
-├── main.cpp                 # Main entry point - orchestrates the pipeline
+├── main.cpp
+├── CMakeLists.txt
 ├── src/
 │   ├── cpp/
-│   │   ├── operations/      # Individual operation implementations
-│   │   │   ├── base_operation.hpp
-│   │   │   ├── brightness_operation.cpp/hpp
-│   │   │   ├── blur_operation.cpp/hpp
-│   │   │   ├── crop_operation.cpp/hpp
-│   │   │   ├── sharpen_operation.cpp/hpp
-│   │   │   └── contrast_operation.cpp/hpp
-│   │   └── bindings/        # Pipeline system components
-│   │       ├── pipeline_reader.cpp/hpp    # Reads and validates JSON
-│   │       └── operation_factory.cpp/hpp  # Creates operation objects
-│   └── python/              # Python interface (Phase 2)
-│       ├── operation_definitions.py       # Operation metadata
-│       ├── operation_sequence.py          # Pipeline builder
-│       ├── utils.py                       # Helper functions
-│       └── test_operation.py              # Python tests
+│   │   ├── operations/
+│   │   │   ├── cpp/
+│   │   │   │   ├── base_operation.cpp
+│   │   │   │   └── operations.cpp
+│   │   │   └── hpp/
+│   │   │       ├── base_operation.hpp
+│   │   │       └── operations.hpp
+│   │   └── bindings/
+│   │       ├── cpp/
+│   │       │   ├── operation_factory.cpp
+│   │       │   └── pipeline_reader.cpp
+│   │       └── hpp/
+│   │           ├── operation_factory.hpp
+│   │           └── pipeline_reader.hpp
+│   └── python/
+│       └── main_cli.py
+├── data/
+│   ├── input.jpg
+│   └── output_*.jpg
 ├── tests/
-│   ├── cpp/                 # C++ unit tests
-│   ├── python/              # Python tests
-│   └── json/                # Test pipeline configurations
-├── data/                    # Sample images and outputs
-└── CMakeLists.txt           # Build configuration
+│   ├── cpp/
+│   ├── python/
+│   └── json/
+│       └── test_pipeline.json
+└── build/
+    └── Release/
+        └── sea_vision.exe
 ```
 
-# Files
+---
 
-## C++ Files:
-- **`main.cpp`**: Entry point that reads JSON, loads image, executes pipeline, saves result
-- **`pipeline_reader.cpp/hpp`**: Parses JSON files and validates pipeline configurations
-- **`operation_factory.cpp/hpp`**: Creates operation objects dynamically based on type names
-- **`base_operation.hpp`**: Abstract base class that all operations inherit from
-- **`*_operation.cpp/hpp`**: Individual operation implementations (brightness, blur, etc.)
+## key files
 
-## Test Files:
-- **`test_*.json`**: Sample pipeline configurations demonstrating different effects
-- **`test_operations.cpp`**: C++ unit tests for individual operations
-- **`test_sequence.py`**: Python tests for pipeline building
+- **main.cpp**: entry point, runs the pipeline
+- **src/cpp/operations/hpp/operations.hpp / cpp/operations.cpp**: all operation implementations
+- **src/cpp/bindings/hpp/operation_factory.hpp / cpp/operation_factory.cpp**: factory for creating operations
+- **src/cpp/bindings/hpp/pipeline_reader.hpp / cpp/pipeline_reader.cpp**: reads and parses pipeline json
+- **src/python/main_cli.py**: interactive cli for building and running pipelines
 
-# Status 
+---
 
-## Completed:
-- C++ pipeline system with JSON configuration
-- 5 core operations (brightness, blur, crop, sharpen, contrast)
-- Factory pattern for dynamic operation creation
-- Parameter validation and error handling
-- Comprehensive test suite
-- Order-dependent operation effects
+## features
 
-## In Progress:
-- Python interface for interactive pipeline building
-- JSON generation from Python
-- Enhanced parameter validation
-- User-friendly CLI tools
+- modular, extensible c++ pipeline
+- interactive python cli for easy pipeline creation
+- supports: brightness, blur, contrast, crop, sharpen
+- simple json config for reproducible pipelines
