@@ -1,0 +1,12 @@
+{
+  "operations": [
+    {
+      "type": "brightness",
+      "parameters": {
+        "factor": 1.0
+      }
+    }
+  ],
+  "input_image": "data/input.jpg",
+  "output_image": "data/output_step8_brightness_py.jpg"
+}

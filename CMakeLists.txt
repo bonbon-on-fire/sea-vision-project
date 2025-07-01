@@ -1,36 +1,33 @@
 cmake_minimum_required(VERSION 3.15)
-project(sea_vision_step1)
+project(sea_vision_project)
 
-# set C++ standard
+# c++ standard
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
-# set OpenCV_DIR to local OpenCV
-set(OpenCV_DIR ${CMAKE_CURRENT_SOURCE_DIR}/opencv/build)
-
-# find OpenCV
+# set OpenCV path to local installation
+set(OpenCV_DIR "${CMAKE_SOURCE_DIR}/opencv/build")
 find_package(OpenCV REQUIRED)
 
-# print OpenCV info for debugging
-message(STATUS "OpenCV version: ${OpenCV_VERSION}")
-message(STATUS "OpenCV libraries: ${OpenCV_LIBS}")
-message(STATUS "OpenCV include path: ${OpenCV_INCLUDE_DIRS}")
+# set nlohmann_json path to local installation
+set(nlohmann_json_DIR "${CMAKE_SOURCE_DIR}/include/json-develop")
+include_directories("${CMAKE_SOURCE_DIR}/include/json-develop/single_include")
 
-# create executable
-add_executable(step main.cpp 
-    src/cpp/operations/brightness_operation.cpp
-    src/cpp/operations/blur_operation.cpp
-    src/cpp/operations/crop_operation.cpp
-    src/cpp/operations/sharpen_operation.cpp
-    src/cpp/operations/contrast_operation.cpp
-    src/cpp/bindings/pipeline_reader.cpp
-    src/cpp/bindings/operation_factory.cpp
+# executable
+add_executable(sea_vision
+    main.cpp
+    src/cpp/operations/cpp/base_operation.cpp
+    src/cpp/operations/cpp/operations.cpp
+    src/cpp/bindings/cpp/pipeline_reader.cpp
+    src/cpp/bindings/cpp/operation_factory.cpp
 )
 
-# link OpenCV
-target_link_libraries(step ${OpenCV_LIBS})
+# libraries
+target_link_libraries(sea_vision
+    ${OpenCV_LIBS}
+)
 
-# set output directory
-set_target_properties(step PROPERTIES
+# output directory
+set_target_properties(sea_vision PROPERTIES
     RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}
-) 
+)
