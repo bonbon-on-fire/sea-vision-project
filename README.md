@@ -1,38 +1,38 @@
-# sea vision project
+# Sea Vision Project
 
-## overview
-this project provides a flexible, scriptable image processing pipeline. you can build pipelines interactively using a python cli, or by writing a json config. the c++ backend executes the pipeline, applying each operation in order.
+## Overview
+This project provides a flexible, scriptable image processing pipeline. You can build pipelines interactively using a Python CLI, or by writing a JSON config. The C++ backend executes the pipeline, applying each operation in order.
 
 ---
 
-## workflow
+## Workflow
 
 ```mermaid
 flowchart LR
-    A[user input] --> B[python cli or manual json]
-    B --> C[pipeline json]
-    C --> D[c++ backend]
-    D --> E[processed image output]
+    A[User Input] --> B[Python CLI or Manual JSON]
+    B --> C[Pipeline JSON]
+    C --> D[C++ Backend]
+    D --> E[Processed Image Output]
 ```
 
 ---
 
-## how to use
+## How to Use
 
-### 1. interactive python cli
+### 1. Interactive Python CLI
 
-run:
+Run:
 ```sh
 python src/python/main_cli.py
 ```
-- select operations (brightness, blur, contrast, crop, sharpen) by number
-- enter parameters as prompted
-- enter input and output image paths (e.g., `data/input.jpg`, `data/output_result.jpg`)
-- the cli creates a json pipeline and runs the c++ backend automatically
+- Select operations (brightness, blur, contrast, crop, sharpen) by number
+- Enter parameters as prompted
+- Enter input and output image paths (e.g., `data/input.jpg`, `data/output_result.jpg`)
+- The CLI creates a JSON pipeline and runs the C++ backend automatically
 
-### 2. manual json
+### 2. Manual JSON
 
-create a file like:
+Create a file like:
 ```json
 {
   "operations": [
@@ -49,14 +49,14 @@ create a file like:
   "output_image": "data/output_result.jpg"
 }
 ```
-then run:
+Then run:
 ```sh
 build/Release/sea_vision.exe pipeline.json data/input.jpg data/output_result.jpg
 ```
 
 ---
 
-## project structure
+## Project Structure
 
 ```
 sea_vision_project/
@@ -95,19 +95,31 @@ sea_vision_project/
 
 ---
 
-## key files
+## Key Files
 
-- **main.cpp**: entry point, runs the pipeline
-- **src/cpp/operations/hpp/operations.hpp / cpp/operations.cpp**: all operation implementations
-- **src/cpp/bindings/hpp/operation_factory.hpp / cpp/operation_factory.cpp**: factory for creating operations
-- **src/cpp/bindings/hpp/pipeline_reader.hpp / cpp/pipeline_reader.cpp**: reads and parses pipeline json
-- **src/python/main_cli.py**: interactive cli for building and running pipelines
+- **main.cpp**: Entry point, runs the pipeline
+- **src/cpp/operations/hpp/operations.hpp / cpp/operations.cpp**: All operation implementations
+- **src/cpp/bindings/hpp/operation_factory.hpp / cpp/operation_factory.cpp**: Factory for creating operations
+- **src/cpp/bindings/hpp/pipeline_reader.hpp / cpp/pipeline_reader.cpp**: Reads and parses pipeline JSON
+- **src/python/main_cli.py**: Interactive CLI for building and running pipelines
 
 ---
 
-## features
+## Features
 
-- modular, extensible c++ pipeline
-- interactive python cli for easy pipeline creation
-- supports: brightness, blur, contrast, crop, sharpen
-- simple json config for reproducible pipelines
+- Modular, extensible C++ pipeline
+- Interactive Python CLI for easy pipeline creation
+- Supports: brightness, blur, contrast, crop, sharpen
+- Simple JSON config for reproducible pipelines
+- Clean, lowercase output and error messages
+
+---
+
+## Status
+
+- [x] C++ pipeline system with JSON configuration
+- [x] 5 core operations
+- [x] Factory pattern for dynamic operation creation
+- [x] Python CLI for interactive pipeline building
+- [x] Clean, lowercase output everywhere
+- [x] Refactored and organized codebase
