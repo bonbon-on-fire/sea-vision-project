@@ -1,16 +1,19 @@
 [requires]
-opencv/4.8.1
 nlohmann_json/3.11.2
 
 [generators]
 CMakeDeps
 CMakeToolchain
 
+[layout]
+cmake_layout
+
 [options]
 opencv/*:shared=True
 opencv/*:with_gtk=False
 opencv/*:with_qt=False
-opencv/*:with_ffmpeg=True
+opencv/*:with_ffmpeg=False
 opencv/*:with_imgcodecs=True
 opencv/*:with_imgproc=True
-opencv/*:with_core=True 
+opencv/*:with_core=True
+ade/*:Platform=ARM64
