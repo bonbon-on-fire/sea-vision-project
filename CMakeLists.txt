@@ -5,11 +5,12 @@ project(sea_vision_project)
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
-# use Conan toolchain
-include(${CMAKE_BINARY_DIR}/conan_toolchain.cmake)
-
-# find packages from Conan
+# Load conan dependencies for nlohmann/json
 find_package(nlohmann_json REQUIRED)
+
+# Use pre-built OpenCV
+set(OpenCV_DIR "${CMAKE_SOURCE_DIR}/opencv/build")
+find_package(OpenCV REQUIRED)
 
 # executable
 add_executable(sea_vision
@@ -20,14 +21,16 @@ add_executable(sea_vision
     src/cpp/bindings/cpp/operation_factory.cpp
 )
 
-# link libraries from Conan
+# link libraries
 target_link_libraries(sea_vision
     ${OpenCV_LIBS}
     nlohmann_json::nlohmann_json
 )
 
-target_include_directories(sea_vision PRIVATE src/cpp)
-target_include_directories(sea_vision PRIVATE opencv-4.11.0/include)
+# include directories
+target_include_directories(sea_vision PRIVATE 
+    src/cpp
+)
 
 # output directory
 set_target_properties(sea_vision PROPERTIES
