@@ -1,5 +1,5 @@
-#include "../hpp/pipeline_reader.hpp"
-#include "../../../include/json-develop/single_include/nlohmann/json.hpp"
+#include "bindings/hpp/pipeline_reader.hpp"
+#include <nlohmann/json.hpp>
 #include <fstream>
 #include <stdexcept>
 
