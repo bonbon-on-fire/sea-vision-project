@@ -123,3 +123,4 @@ sea_vision_project/
 - [x] Python CLI for interactive pipeline building
 - [x] Clean, lowercase output everywhere
 - [x] Refactored and organized codebase
+- [x] OpenCV integration with automatic DLL path management
