@@ -1,17 +1,21 @@
-#include <opencv2/opencv.hpp>
 #include <iostream>
 #include <string>
 
+// opencv
+#include <opencv2/opencv.hpp>
+
 // operation classes
-#include "src/cpp/operations/hpp/base_operation.hpp"
-#include "src/cpp/operations/hpp/operations.hpp"
+#include "operations/hpp/base_operation.hpp"
+#include "operations/hpp/operations.hpp"
 
 // pipeline system
-#include "src/cpp/bindings/hpp/pipeline_reader.hpp"
-#include "src/cpp/bindings/hpp/operation_factory.hpp"
+#include "bindings/hpp/pipeline_reader.hpp"
+#include "bindings/hpp/operation_factory.hpp"
 
 // main function for json-driven pipeline execution
 int main(int argc, char* argv[]) {
+    std::cout << "sea_vision.exe started" << std::endl;
+
     // check command line arguments
     if (argc != 4) {
         std::cout << "usage: " << argv[0] << " <pipeline.json> <input_image> <output_image>" << std::endl;

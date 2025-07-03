@@ -97,12 +97,45 @@ def prompt_for_roi():
 def main():
     print("welcome to the sea vision pipeline builder!")
     operations = []
+
+    # --- AUTO-FILL EXAMPLE INPUTS ---
+    auto_inputs = iter([
+        '1',        # select brightness
+        '1.5',     # brightness factor
+        '2',       # select blur
+        '7',       # kernel size
+        '2.0',     # sigma
+        '0',       # done
+        '0',       # roi x
+        '0',       # roi y
+        '0',       # roi width
+        '0',       # roi height
+        'data/input.jpg',  # input image path
+        'data/output.jpg'  # output image path
+    ])
+    def auto_input(prompt):
+        try:
+            value = next(auto_inputs)
+            print(f"{prompt}{value}")
+            return value
+        except StopIteration:
+            return input(prompt)
+
+    # Replace input() with auto_input() below for auto-filling
     while True:
-        op_num = prompt_for_operation()
+        op_num = int(auto_input("select operation number: "))
         if op_num == 0:
             break
         op = OPERATIONS[op_num - 1]
-        params = prompt_for_params(op)
+        params = {}
+        for param in op["params"]:
+            val = auto_input(f"  {param['prompt']}: ")
+            if val == '' and param["default"] is not None:
+                params[param["name"]] = param["default"]
+            elif val == '' and param["default"] is None:
+                continue
+            else:
+                params[param["name"]] = param["type"](val)
         operations.append({
             "type": op["name"],
             "parameters": params
@@ -112,10 +145,16 @@ def main():
         return
     
     # get roi input
-    roi = prompt_for_roi()
+    print("\nenter roi (region of interest) parameters:")
+    print("(enter 0 for width/height to process full image)")
+    x = int(auto_input("  x coordinate (default 0): ") or "0")
+    y = int(auto_input("  y coordinate (default 0): ") or "0")
+    width = int(auto_input("  width (0 for full image): ") or "0")
+    height = int(auto_input("  height (0 for full image): ") or "0")
+    roi = {"x": x, "y": y, "width": width, "height": height}
     
-    input_image = input("enter input image path: ")
-    output_image = input("enter output image path: ")
+    input_image = auto_input("enter input image path: ")
+    output_image = auto_input("enter output image path: ")
     pipeline = {
         "roi": roi,
         "operations": operations,
@@ -127,17 +166,25 @@ def main():
         json.dump(pipeline, f, indent=2)
     print(f"pipeline json written to {json_path}")
     # run the c++ executable
-    exe_path = os.path.join("build", "Release", "sea_vision.exe")
-    cmd = [exe_path, json_path, input_image, output_image]
+    cmd = [os.path.join("build", "Release", "sea_vision.exe"), json_path, input_image, output_image]
     print(f"running: {' '.join(cmd)}")
+    # set OpenCV DLL path in environment
+    opencv_bin = r"C:\Users\nishi\sea_vision_project\opencv\build\x64\vc16\bin"
+    env = os.environ.copy()
+    env["PATH"] = opencv_bin + ";" + env["PATH"]
+
     try:
-        result = subprocess.run(cmd, capture_output=True, text=True, check=True)
+        result = subprocess.run(cmd, capture_output=True, text=True, check=True, env=env)
         print(result.stdout)
         print("pipeline executed successfully.")
     except subprocess.CalledProcessError as e:
         print("error running pipeline:")
-        print(e.stdout)
-        print(e.stderr)
+        if e.stdout:
+            print("stdout:")
+            print(e.stdout)
+        if e.stderr:
+            print("stderr:")
+            print(e.stderr)
 
 if __name__ == "__main__":
     main()

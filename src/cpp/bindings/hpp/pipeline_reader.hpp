@@ -3,8 +3,8 @@
 #include <string>
 #include <vector>
 #include <map>
-#include "../operations/hpp/base_operation.hpp"
-#include "../../../include/json-develop/single_include/nlohmann/json.hpp"
+#include "operations/hpp/base_operation.hpp"
+#include <nlohmann/json.hpp>
 
 /**
  * structure to hold operation configuration from JSON

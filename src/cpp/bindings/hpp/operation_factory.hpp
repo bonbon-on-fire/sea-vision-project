@@ -3,8 +3,8 @@
 #include <string>
 #include <memory>
 #include <map>
-#include "../operations/hpp/base_operation.hpp"
-#include "../operations/hpp/operations.hpp"
+#include "operations/hpp/base_operation.hpp"
+#include "operations/hpp/operations.hpp"
 
 // operation factory class
 class OperationFactory {
