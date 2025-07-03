@@ -1,5 +1,5 @@
-#include "../hpp/operation_factory.hpp"
-#include "../hpp/operations.hpp"
+#include "bindings/hpp/operation_factory.hpp"
+#include "operations/hpp/operations.hpp"
 
 const std::map<std::string, OperationFactory::OperationCreator> OperationFactory::creators = {
     {"brightness", &OperationFactory::createBrightness},

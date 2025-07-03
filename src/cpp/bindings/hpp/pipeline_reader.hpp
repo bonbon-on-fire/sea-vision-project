@@ -3,7 +3,7 @@
 #include <string>
 #include <vector>
 #include <map>
-#include "../operations/hpp/base_operation.hpp"
+#include "operations/hpp/base_operation.hpp"
 #include <nlohmann/json.hpp>
 
 /**

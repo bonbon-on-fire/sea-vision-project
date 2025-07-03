@@ -14,6 +14,8 @@
 
 // main function for json-driven pipeline execution
 int main(int argc, char* argv[]) {
+    std::cout << "sea_vision.exe started" << std::endl;
+
     // check command line arguments
     if (argc != 4) {
         std::cout << "usage: " << argv[0] << " <pipeline.json> <input_image> <output_image>" << std::endl;

@@ -1,12 +1,25 @@
 {
+  "roi": {
+    "x": 0,
+    "y": 0,
+    "width": 0,
+    "height": 0
+  },
   "operations": [
     {
       "type": "brightness",
       "parameters": {
-        "factor": 1.0
+        "factor": 1.5
+      }
+    },
+    {
+      "type": "blur",
+      "parameters": {
+        "kernel_size": 7,
+        "sigma": 2.0
       }
     }
   ],
   "input_image": "data/input.jpg",
-  "output_image": "data/output_step8_brightness_py.jpg"
+  "output_image": "data/output.jpg"
 }
