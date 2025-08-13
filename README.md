@@ -457,4 +457,3 @@ I built a Python-C++ hybrid system that automates image-based defect detection f
 
 **Internship Duration**: Summer 2025  
 **Technologies**: Python, C++, OpenCV, CMake, JSON, Git  
-**Lines of Code**: ~2,500 (C++), ~500 (Python), ~1,000 (Tests & Config)
